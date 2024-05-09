@@ -55,12 +55,9 @@ class MainActivity : AppCompatActivity() {
         rcvDatos.layoutManager = LinearLayoutManager(this)
 
         //2- Crear un adaptador
-        val miAdaptador = Adaptador(listaDeDatos)
+
 
     }
 }
 
-class Adaptador (private val Datos: Array<String>) {
-    
-}
 
