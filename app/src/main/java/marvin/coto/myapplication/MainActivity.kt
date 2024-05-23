@@ -1,6 +1,8 @@
 package marvin.coto.myapplication
 
 import Modelo.ClaseConexion
+import Modelo.listaProductos
+import RecyclerViewHelpers.Adaptador
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -10,9 +12,11 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,6 +37,8 @@ class MainActivity : AppCompatActivity() {
         val rcvDatos = findViewById<RecyclerView>(R.id.rcvDatos)
 
 
+
+
         //2- Programar el boton de agregar
         btnAgregar.setOnClickListener {
             GlobalScope .launch(Dispatchers.IO){
@@ -49,10 +55,52 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        //Mostrar datos
+        //3- Mostrar los datos
+
+        //3.1- Ponerle un layout a mi RecyclerView
+        rcvDatos.layoutManager = LinearLayoutManager(this)
+
+        //Función para mostrar datos
+        fun obtenerDatos(): List<listaProductos>{
+            val objConexion = ClaseConexion().cadenaConexion()
+
+            val statement = objConexion?.createStatement()
+            val resultSet = statement?.executeQuery("select * from tbProductos1")!!
+
+            val listadoProductos = mutableListOf<listaProductos>()
+
+            //Recorrer todos los datos que me trajo el select
+
+            while (resultSet.next()){
+                val nombre = resultSet.getString("nombreProducto")
+                val producto = listaProductos(nombre)
+                listadoProductos.add(producto)
+            }
+
+            return listadoProductos
+
+        }
+
+        //Ejecutamos la funcion
+        CoroutineScope(Dispatchers.IO).launch {
+            val ejecutarFuncion = obtenerDatos()
+
+            //3.2- Crear un adaptador
+            withContext(Dispatchers.Main){
+                //Asigno el adaptador mi RecyclerView
+                val miAdaptador = Adaptador(ejecutarFuncion)
+                rcvDatos.adapter = miAdaptador
+            }
+        }
+
+
+
+
+
+
 
         //1- Ponerle un layout a mi RecyclerView
-        rcvDatos.layoutManager = LinearLayoutManager(this)
+        //rcvDatos.layoutManager = LinearLayoutManager(this)
 
         //2- Crear un adaptador
 

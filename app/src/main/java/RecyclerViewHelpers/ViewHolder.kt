@@ -7,5 +7,5 @@ import marvin.coto.myapplication.R
 
 class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
 
-    val textView: TextView = view.findViewById(R.id.txtProductoDato)
+    val textView: TextView = view.findViewById(R.id.txt)
 }
